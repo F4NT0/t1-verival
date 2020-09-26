@@ -18,7 +18,8 @@ package grupo12;
 
 
 
-public class DepComb {
+class DepComb {
+
     public enum SITUACAO { NORMAL, SOBRAVISO, EMERGENCIA }
     public enum TIPOPOSTO { COMUM, ESTRATEGICO }
 
