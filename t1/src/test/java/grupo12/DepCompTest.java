@@ -30,7 +30,7 @@ public class DepCompTest {
         "249,4999,624,624,SOBRAVISO",
         "124,2499,311,311,EMERGENCIA"
     })
-    public void getSituacao(int aditivo,int gasolina,int alcool1,int alcool2,DepComb.SITUACAO resultado) {
+    public void getSituacaoTest(int aditivo,int gasolina,int alcool1,int alcool2,DepComb.SITUACAO resultado) {
         dc = new DepComb(aditivo, gasolina, alcool1, alcool2);
         DepComb.SITUACAO aux = dc.getSituacao();
         Assertions.assertEquals( resultado, aux);
