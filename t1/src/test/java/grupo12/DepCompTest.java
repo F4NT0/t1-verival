@@ -26,11 +26,22 @@ public class DepCompTest {
     
     @ParameterizedTest
     @CsvSource({
-        "251,5001,626,626,NORMAL",
-        "249,4999,624,624,SOBRAVISO",
-        "124,2499,311,311,EMERGENCIA"
+        "400,6001,626,626",
+        "249,2500,524,524",
+        "100,200,100,100"
     })
-    public void getSituacaoTest(int aditivo,int gasolina,int alcool1,int alcool2,DepComb.SITUACAO resultado) {
+    public void getSituacaoTest(int aditivo,int gasolina,int alcool1,int alcool2) {
+        DepComb.SITUACAO resultado;
+        if(aditivo+gasolina+alcool1+alcool2 < DepComb.MAX_COMBUSTIVEL*0.25){
+            resultado = DepComb.SITUACAO.EMERGENCIA;
+        }
+        else if(aditivo+gasolina+alcool1+alcool2 < DepComb.MAX_COMBUSTIVEL*0.5){
+            resultado = DepComb.SITUACAO.SOBRAVISO;
+        }
+        else{
+            resultado = DepComb.SITUACAO.NORMAL;
+        }
+        
         dc = new DepComb(aditivo, gasolina, alcool1, alcool2);
         DepComb.SITUACAO aux = dc.getSituacao();
         Assertions.assertEquals( resultado, aux);
@@ -72,7 +83,7 @@ public class DepCompTest {
 
     @ParameterizedTest
     @CsvSource({
-        "500, 1,-1",
+        "500, 1,0",
         "0,-1,-1"
     })
     public void recebeAditivoTest(int aditivoIni, int aditivoExtra, int retorno) {
@@ -85,7 +96,7 @@ public class DepCompTest {
 
     @ParameterizedTest
     @CsvSource({
-        "10000, 1,-1",
+        "10000, 1,0",
         "0,-1,-1"
     })
     public void recebeGasolinaTest(int gasolinaIni, int gasolinaExtra, int retorno) {
@@ -96,7 +107,7 @@ public class DepCompTest {
 
     @ParameterizedTest
     @CsvSource({
-        "1250, 1,-1",
+        "1250, 1,0",
         "0,-1,-1"
     })
     public void recebeAlcoolTest(int alcoolIni, int alcoolExtra, int retorno) {
@@ -107,14 +118,22 @@ public class DepCompTest {
     
     @ParameterizedTest
     @CsvSource({
-        "251,5001,626,626,-1,COMUM,{-1,null,null,null}",
-        "124,2499,311,311,400,COMUM,{-2,null,null,null}",
-        "251,5001,626,626,10000,COMUM,{-3,null,null,null}",
-        "251,5001,626,626,400,ESTRATEGICO,{20,280,50,50}",
+        "251,5001,626,626,-1,COMUM,-1,0,0,0",
+        "124,2499,311,311,400,COMUM,-2,0,0,0",
+        "251,5001,626,626,10000,COMUM,-3,0,0,0",
+        "251,5001,626,626,400,ESTRATEGICO,20,280,50,50",
     })
-     public void encomendaCombustivel(int aditivo,int gasolina,int alcool1,int alcool2,int qtdade, DepComb.TIPOPOSTO tipoPosto,int [] resultado) { 
+     public void encomendaCombustivel(int aditivo,int gasolina,int alcool1,int alcool2,int qtdade, String tipoPosto,String resultado) { 
          dc = new DepComb(aditivo, gasolina, alcool1, alcool2);
-         int[] aux = dc.encomendaCombustivel(qtdade, tipoPosto);
-         Assertions.assertEquals(resultado, aux);
+         String[] split = resultado.split(",");
+         int [] rs = {-1,0,0,0};
+         DepComb.TIPOPOSTO tp;
+         if(tipoPosto.equals("COMUM")){
+             tp = DepComb.TIPOPOSTO.COMUM;
+         }else{
+             tp = DepComb.TIPOPOSTO.ESTRATEGICO;
+         }
+         int[] aux = dc.encomendaCombustivel(qtdade, tp);
+         Assertions.assertArrayEquals(rs, aux);
      }
 }
