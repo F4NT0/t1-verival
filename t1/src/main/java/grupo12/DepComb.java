@@ -9,7 +9,7 @@ class DepComb {
     public static final int MAX_GASOLINA = 10000;
     public static final int MAX_COMBUSTIVEL = 13000;
 
-    public SITUACAO situação;
+    public SITUACAO situacao;
     public TIPOPOSTO tipo;
     public int tAditivo;
     public int tGasolina;
@@ -29,17 +29,17 @@ class DepComb {
         int total = this.tAditivo + this.tGasolina + this.tAlcool1 + this.tAlcool2;
         if(this.MAX_COMBUSTIVEL / total < 0.5){
             if(this.MAX_COMBUSTIVEL / total < 0.25){
-                this.situação = SITUACAO.EMERGENCIA;
+                this.situacao = SITUACAO.EMERGENCIA;
             }else{
-                this.situação = SITUACAO.SOBRAVISO;
+                this.situacao = SITUACAO.SOBRAVISO;
             }
         }else{
-            this.situação = SITUACAO.NORMAL;
+            this.situacao = SITUACAO.NORMAL;
         }
     }
 
     public SITUACAO getSituacao(){
-        return this.situação;
+        return this.situacao;
     }
 
     public int gettGasolina(){
@@ -118,12 +118,12 @@ class DepComb {
             ret[0] = -1;
             return ret;
         }
-        if(this.situação == SITUACAO.SOBRAVISO){
+        if(this.situacao == SITUACAO.SOBRAVISO){
             if(tipoPosto != TIPOPOSTO.ESTRATEGICO){
                 qtdade = qtdade/2;
             }
 
-        } else if(this.situação == SITUACAO.EMERGENCIA){
+        } else if(this.situacao == SITUACAO.EMERGENCIA){
             if(tipoPosto == TIPOPOSTO.ESTRATEGICO){
                 if(gasolina >= qtdade * 0.7 && alcool >= qtdade * 0.25){
                     ret[0] = 0;
