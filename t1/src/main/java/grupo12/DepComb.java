@@ -1,69 +1,155 @@
 package grupo12;
 
-/*
- * Copyright 2001-2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
-
 class DepComb {
 
     public enum SITUACAO { NORMAL, SOBRAVISO, EMERGENCIA }
     public enum TIPOPOSTO { COMUM, ESTRATEGICO }
-
     public static final int MAX_ADITIVO = 500;
     public static final int MAX_ALCOOL = 2500;
     public static final int MAX_GASOLINA = 10000;
+    public static final int MAX_COMBUSTIVEL = 13000;
 
-    public DepComb(int tAditivo, int tGasolina, int tAlcool1, int tAlcool2) {}
+    public SITUACAO situação;
+    public TIPOPOSTO tipo;
+    public int tAditivo;
+    public int tGasolina;
+    public int tAlcool1;
+    public int tAlcool2;
 
-    public void defineSituacao(){}
+    public DepComb(int tAditivo, int tGasolina, int tAlcool1, int tAlcool2) {
+        int totalAlcool = (tAlcool1 + tAlcool2) / 2;
+        this.tAditivo = tAditivo;
+        this.tGasolina = tGasolina;
+        this.tAlcool1 = totalAlcool;
+        this.tAlcool2 = totalAlcool;
+        this.defineSituacao();
+    }
+
+    public void defineSituacao(){
+        int total = this.tAditivo + this.tGasolina + this.tAlcool1 + this.tAlcool2;
+        if(this.MAX_COMBUSTIVEL / total < 0.5){
+            if(this.MAX_COMBUSTIVEL / total < 0.25){
+                this.situação = SITUACAO.EMERGENCIA;
+            }else{
+                this.situação = SITUACAO.SOBRAVISO;
+            }
+        }else{
+            this.situação = SITUACAO.NORMAL;
+        }
+    }
 
     public SITUACAO getSituacao(){
-        return SITUACAO.NORMAL;
+        return this.situação;
     }
 
     public int gettGasolina(){
-        return 0;
+        return this.tGasolina;
     }
 
     public int gettAditivo(){
-        return 0;
+        return this.tAditivo;
     }
 
     public int gettAlcool1(){
-        return 0;
+        return this.tAlcool1;
     }
 
     public int gettAlcool2(){
-        return 0;
+        return this.tAlcool2;
     }
 
     public int recebeAditivo(int qtdade) { 
-        return 0;
+        if(qtdade < 0){
+            return -1;
+        }
+        int livre  = this.MAX_ADITIVO - this.tAditivo;
+        if(livre >= qtdade){
+            this.tAditivo += qtdade;
+            return qtdade;
+        }else if(livre < 1){
+            return 0;
+        }else{
+            this.tAditivo += livre;
+            return livre;
+        }
     }
 
     public int recebeGasolina(int qtdade) { 
-        return 0;
+        if(qtdade < 0){
+            return -1;
+        }
+        int livre  = this.MAX_GASOLINA - this.tGasolina;
+        if(livre >= qtdade){
+            this.tGasolina += qtdade;
+            return qtdade;
+        }else if(livre < 1){
+            return 0;
+        }else{
+            this.tGasolina += livre;
+            return livre;
+        }
     }
 
-    public int recebeAlcool(int qtdade) {  
-        return 0;
+    public int recebeAlcool(int qtdade) {
+        if(qtdade < 0){
+            return -1;
+        }
+        int livre  = this.MAX_ADITIVO - this.tAlcool1 - this.tAlcool2;
+        if(livre >= qtdade){
+            this.tAlcool1 += qtdade/2;
+            this.tAlcool2 += qtdade/2;
+            return qtdade;
+        }else if(livre < 1){
+            return 0;
+        }else{
+            this.tAlcool1 += livre/2;
+            this.tAlcool1 += livre/2;
+            return livre;
+        }
     }
 
-    public int[] encomendaCombustivel(int qtdade, TIPOPOSTO tipoPosto) { 
+    public int[] encomendaCombustivel(int qtdade, TIPOPOSTO tipoPosto) {
+        Double gasolina =  Double.valueOf(this.tGasolina);
+        Double aditivo = Double.valueOf(this.tAditivo);
+        Double alcool = Double.valueOf(this.tAlcool1 + this.tAlcool2);
+        int [] ret = new int[4];
+
+        if(qtdade < 0){
+            ret[0] = -1;
+            return ret;
+        }
+        if(this.situação == SITUACAO.SOBRAVISO){
+            if(tipoPosto != TIPOPOSTO.ESTRATEGICO){
+                qtdade = qtdade/2;
+            }
+
+        } else if(this.situação == SITUACAO.EMERGENCIA){
+            if(tipoPosto == TIPOPOSTO.ESTRATEGICO){
+                if(gasolina >= qtdade * 0.7 && alcool >= qtdade * 0.25){
+                    ret[0] = 0;
+                    ret[1] = (int) (qtdade * 0.7);
+                    ret[2] = (int) (qtdade * 0.125);
+                    ret[3] = (int) (qtdade * 0.125);
+                    return ret;
+                } else{
+                    ret[0] = -3;
+                    return ret;
+                }
+            }else{
+                ret[0] = -2;
+                return ret;
+            }
+        }
+        if(gasolina >= qtdade * 0.7 && alcool >= qtdade * 0.25 && aditivo >= qtdade * 0.05){
+            ret[0] = (int) (qtdade * 0.05);
+            ret[1] = (int) (qtdade * 0.7);
+            ret[2] = (int) (qtdade * 0.125);
+            ret[3] = (int) (qtdade * 0.125);
+        }else{
+            ret[0] = -3;
+            return ret;
+        }
+
         return new int[]{1,2};
     }
 }
