@@ -46,8 +46,9 @@ public class DepCompTest {
         }
         
         dc = new DepComb(aditivo, gasolina, alcool1, alcool2);
+        int total = aditivo + gasolina + alcool1 + alcool2;
         DepComb.SITUACAO aux = dc.getSituacao();
-        //Assertions.assertEquals( resultado, aux);
+        Assertions.assertEquals(resultado, aux);
     }
     
     
@@ -60,9 +61,7 @@ public class DepCompTest {
     })
     public void recebeAditivoTest(int aditivoIni, int aditivoExtra, int retorno) {
         dc = new DepComb(aditivoIni, 10000, 1250, 1250);
-
         int aux = dc.recebeAditivo(aditivoExtra);
-
         Assertions.assertEquals(retorno, aux);
     }
 
@@ -83,41 +82,69 @@ public class DepCompTest {
     @CsvSource({
         "1250, 1,0",
         "0,-1,-1",
-        "600,300,300",
-        "1200,100,50"
+        "625,1000,1000",
+        "1200,300,100"
     })
     public void recebeAlcoolTest(int alcoolIni, int alcoolExtra, int retorno) {
         dc = new DepComb(500, 10000, alcoolIni, alcoolIni);
         int aux = dc.recebeAlcool(alcoolExtra);
         Assertions.assertEquals(retorno, aux);
     }
-    
+
     @ParameterizedTest
     @CsvSource({
         "255,5100,638,638,400,COMUM,235;4820;588;588",
-        "255,5100,638,638,100,ESTRATEGICO,250;5030;625,5;625,5",
-        "185,3700,463,463,1000,COMUM,160;3350;400,5;400,5",
-        "185,3700,463,463,500,ESTRATEGICO,160;3350;400,5;400,5",
+        "255,5100,638,638,100,ESTRATEGICO,250;5030;625;625",
+        "185,3700,463,463,1000,COMUM,160;3350;400;400",
+        "185,3700,463,463,500,ESTRATEGICO,160;3350;400;400",
         "120,2400,300,300,100,COMUM,-2;0;0;0",
         "0,1000,125,125,200,ESTRATEGICO,0;860;100;100",
         "30,10,10,10,5000,ESTRATEGICO,-3;0;0;0",
         "255,5100,638,638,-7,COMUM,-1;0;0;0"
     })
-     public void encomendaCombustivel(int aditivo,int gasolina,int alcool1,int alcool2,int qtdade, String tipoPosto,String resultado) { 
+    public void encomendaCombustivel(int aditivo,int gasolina,int alcool1,int alcool2,int qtdade, String tipoPosto,String resultado) { 
         dc = new DepComb(aditivo, gasolina, alcool1, alcool2);
+
         String[] split = resultado.split(";");
         int size = split.length;
-        int [] rs = new int [size];
+        int [] rs = new int [4];
         for(int i=0; i<size; i++) {
             rs[i] = Integer.parseInt(split[i]);
         }
-         DepComb.TIPOPOSTO tp;
-         if(tipoPosto.equals("COMUM")){
-             tp = DepComb.TIPOPOSTO.COMUM;
-         }else{
-             tp = DepComb.TIPOPOSTO.ESTRATEGICO;
-         }
-         int[] aux = dc.encomendaCombustivel(qtdade, tp);
-         Assertions.assertArrayEquals(rs, aux);
-     }
+        DepComb.TIPOPOSTO tp;
+        if(tipoPosto.equals("COMUM")){
+            tp = DepComb.TIPOPOSTO.COMUM;
+        }else{
+            tp = DepComb.TIPOPOSTO.ESTRATEGICO;
+        }
+        int[] aux = dc.encomendaCombustivel(qtdade, tp);
+        
+        Assertions.assertArrayEquals(rs, aux);
+    }
 }
+
+
+
+
+
+
+/*
+        // Para Depurar o teste de encomendaCombustivel
+        System.out.println("alcool1: " + dc.tAlcool1);
+        System.out.println("alcool2: " + dc.tAlcool2);
+
+        int[] aux = dc.encomendaCombustivel(qtdade, tp);
+
+        System.out.print(aux.length + "  " + rs.length + "\n");
+
+        
+        for(int i = 0; i<aux.length; i++) {
+            System.out.print(aux[i] + "  ");
+        }
+        System.out.println();
+        for(int i = 0; i<rs.length; i++) {
+            System.out.print(rs[i] + "  ");
+        }
+        System.out.println();
+        System.out.println();
+*/
